@@ -5,7 +5,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "https://furiture-app-be.netlify.app/api/auth/register",
+        "https://furniture-be-od3w.onrender.com/api/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -26,7 +26,7 @@ export const loginUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "https://furiture-app-be.netlify.app/api/auth/login",
+        "https://furniture-be-od3w.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

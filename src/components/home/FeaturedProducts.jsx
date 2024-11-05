@@ -6,7 +6,7 @@ const FeaturedProducts = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("https://furiture-app-be.netlify.app/api/products")
+    fetch("https://furniture-be-od3w.onrender.com/api/products")
       .then((res) => {
         //console.log('Response status:', res.status); // Kiểm tra status code
         return res.json();

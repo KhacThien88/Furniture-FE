@@ -15,7 +15,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     // Fetch product data from API
-    fetch(`https://furiture-app-be.netlify.app/api/products/${id}`)
+    fetch(`https://furniture-be-od3w.onrender.com/api/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data); // Directly set `data` as `product`
