@@ -12,19 +12,22 @@ const cartSlice = createSlice({
       const newItem = action.payload;
       const existingItem = state.items.find((item) => item._id === newItem._id);
 
+      // Use the quantity from the payload if provided, otherwise default to 1
+      const quantityToAdd = newItem.quantity || 1;
+
       if (existingItem) {
-        existingItem.quantity++;
-        existingItem.totalPrice += newItem.price; // Add the new price to totalPrice
+        existingItem.quantity += quantityToAdd;
+        existingItem.totalPrice += newItem.price * quantityToAdd; // Update totalPrice based on the added quantity
       } else {
         state.items.push({
           ...newItem,
-          quantity: 1 || newItem.quantity,
-          totalPrice: newItem.price,
+          quantity: quantityToAdd,
+          totalPrice: newItem.price * quantityToAdd,
         });
       }
 
-      state.totalQuantity++;
-      state.totalAmount += newItem.price;
+      state.totalQuantity += quantityToAdd;
+      state.totalAmount += newItem.price * quantityToAdd;
     },
 
     deleteCart(state, action) {
@@ -52,9 +55,9 @@ const cartSlice = createSlice({
     },
 
     updateCartQuantity(state, action) {
-      const { _id, quantity } = action.payload; // Access item_id and quantity from the action payload
+      const { id, quantity } = action.payload; // Access item_id and quantity from the action payload
       // Update the quantity and totalPrice of the item
-      const itemIndex = state.items.findIndex((item) => item._id === _id);
+      const itemIndex = state.items.findIndex((item) => item._id === id);
 
       if (itemIndex >= 0) {
         const item = state.items[itemIndex];
