@@ -1,16 +1,19 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const registerUser = createAsyncThunk(
-  'user/registerUser',
+  "user/registerUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://furiture-app-be.netlify.app/api/auth/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Registration failed');
+      if (!response.ok) throw new Error(data.message || "Registration failed");
       return data; // Trả về dữ liệu nếu đăng ký thành công
     } catch (error) {
       return rejectWithValue(error.message);
@@ -19,16 +22,19 @@ export const registerUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk(
-  'user/loginUser',
+  "user/loginUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "https://furiture-app-be.netlify.app/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Login failed');
+      if (!response.ok) throw new Error(data.message || "Login failed");
       return data; // Trả về thông tin người dùng và token khi đăng nhập thành công
     } catch (error) {
       return rejectWithValue(error.message);
@@ -37,7 +43,7 @@ export const loginUser = createAsyncThunk(
 );
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: {
     user: null,
     token: null,
@@ -48,7 +54,7 @@ const userSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {
@@ -61,7 +67,7 @@ const userSlice = createSlice({
         state.loading = false;
         //state.user = action.payload.user; // Lưu thông tin người dùng từ phản hồi
         state.token = action.payload.token; // Lưu token
-        localStorage.setItem('token', action.payload.token); // Lưu token vào localStorage
+        localStorage.setItem("token", action.payload.token); // Lưu token vào localStorage
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -75,7 +81,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user; // Lưu thông tin người dùng
         state.token = action.payload.token; // Lưu token
-        localStorage.setItem('token', action.payload.token); // Lưu token vào localStorage
+        localStorage.setItem("token", action.payload.token); // Lưu token vào localStorage
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
