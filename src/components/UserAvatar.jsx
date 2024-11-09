@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import { FiLogOut } from 'react-icons/fi'; // Thư viện icon react-icons
-
+import { FiLogOut } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { ImProfile } from 'react-icons/im';
 const UserAvatar = ({ user, handleLogout }) => {
   const [dropdown, setDropdown] = useState(false);
-
-  const getInitials = (name) => {
-    return name.split(' ')[0].toUpperCase();
-  };
 
   const toggleDropdown = () => {
     setDropdown((prev) => !prev);
@@ -18,21 +15,17 @@ const UserAvatar = ({ user, handleLogout }) => {
         className='flex items-center gap-2 cursor-pointer'
         onClick={toggleDropdown}
       >
-        {user.avatarUrl ? (
-          <img
-            src={user.avatarUrl}
-            alt={`${user.username}'s avatar`}
-            className='w-8 h-8 rounded-full object-cover'
-          />
-        ) : (
-          <div className='w-12 h-12 rounded-full bg-lime-500 flex items-center justify-center text-white font-bold'>
-            {getInitials(user.username)}
-          </div>
-        )}
+        <img
+          src={user.avatarUrl || '/img/Users/default.jpg'}
+          alt={`${user.username}'s avatar`}
+          className='w-12 h-12 rounded-full object-cover'
+        />
+        <span className='text-gray-800 font-medium'>{user.username}</span>
       </div>
 
       {dropdown && (
-        <div className='absolute z-50 right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg'>
+        <div className='absolute flex flex-col z-50 right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg'>
+          {/* Logout Button */}
           <button
             onClick={handleLogout}
             className='flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100'
@@ -40,6 +33,14 @@ const UserAvatar = ({ user, handleLogout }) => {
             <FiLogOut className='text-gray-500' />
             <span>Logout</span>
           </button>
+
+          <Link
+            to=''
+            className='flex items-center gap-2 w-full px-4 py-2 text-gray-700 hover:bg-gray-100'
+          >
+            <ImProfile className='text-gray-500' />
+            <span>Profile</span>
+          </Link>
         </div>
       )}
     </div>

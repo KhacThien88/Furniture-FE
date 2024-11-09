@@ -30,7 +30,7 @@ const CartList = () => {
       <table className='w-full h-full text-xs md:text-sm text-gray-500'>
         <thead className='bg-gray-300 font-bold'>
           <tr>
-            <th className='py-3'>ID</th>
+            <th className='py-3'>Image</th>
             <th className='py-3'>Name</th>
             <th className='py-3'>Quantity</th>
             <th className='py-3'>Price</th>
@@ -48,12 +48,18 @@ const CartList = () => {
               </td>
             </tr>
           ) : (
-            cartList.map((item, index) => (
+            cartList.map((item) => (
               <tr
                 key={item._id}
                 className='text-center hover:bg-gray-100'
               >
-                <td className='py-3'>{index + 1}</td>
+                <td className='py-3 text-center'>
+                  <img
+                    src={item.images[0]}
+                    alt={item.name}
+                    className='h-16 w-16 mx-auto object-cover rounded-md'
+                  />
+                </td>
                 <td className='py-3'>{item.name}</td>
                 <td className='py-3'>
                   <input
