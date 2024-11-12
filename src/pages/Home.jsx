@@ -23,7 +23,6 @@ const Home = () => {
 
   const handleSelectCategory = (categoryName) => {
     setSelectedCategory(categoryName);
-    // Lọc sản phẩm theo danh mục
     const filtered = allProducts.filter((product) =>
       product.name.toLowerCase().includes(categoryName.toLowerCase())
     );

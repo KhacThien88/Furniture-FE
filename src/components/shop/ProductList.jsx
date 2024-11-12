@@ -9,15 +9,25 @@ import FilterList from "./FilterList";
 const ProductList = () => {
   const [data, setData] = useState([]);
   const [initialData, setInitialData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://furniture-be-od3w.onrender.com/api/products")
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setInitialData(data);
-      })
-      .catch((err) => console.error("Fetch error:", err));
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      "GET",
+      "https://furniture-be-od3w.onrender.com/api/products",
+      true
+    );
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        setData(response);
+        setInitialData(response);
+        setLoading(false);
+      }
+    };
+    xhr.onerror = () => console.error("Failed to fetch data");
+    xhr.send();
   }, []);
 
   const handleSortChange = (sortedData) => {
@@ -58,7 +68,9 @@ const ProductList = () => {
         <FilterList onFilter={handleFilter} />
         <SortDropdown initialData={initialData} sortedData={handleSortChange} />
       </div>
-      {data.length > 0 ? (
+      {loading ? (
+        <Loading />
+      ) : (
         <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
           {data.map((product) => (
             <div key={product._id}>
@@ -66,8 +78,6 @@ const ProductList = () => {
             </div>
           ))}
         </div>
-      ) : (
-        <Loading />
       )}
     </>
   );
