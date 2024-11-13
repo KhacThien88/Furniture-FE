@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import CartOffset from "./shop/CartOffset";
 import WishlistOffset from "./shop/WishlistOffset";
@@ -6,14 +6,22 @@ import { BsMenuButtonFill } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/userSlice";
 import UserAvatar from "./UserAvatar";
+import { GetUserId } from "../utils/UserUtil";
 
 const Navbar = () => {
+  const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const user = useSelector((state) => state.user.user);
+  const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  useEffect(() => {
+    if (token) {
+      const userId = GetUserId();
+      setUser(userId);
+    } else {
+      setUser(null);
+    }
+  }, [token]);
   console.log("user: ", user);
 
   const handleLogout = () => {

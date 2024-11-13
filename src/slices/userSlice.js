@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { GetUserId } from "../utils/UserUtil";
 
 // Thunk để đăng ký người dùng
 export const registerUser = createAsyncThunk(
@@ -6,7 +7,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "https://furniture-be-od3w.onrender.com/api/auth/register",
+        `${process.env.REACT_APP_LOCAL_API}/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -28,7 +29,7 @@ export const loginUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        "https://furniture-be-od3w.onrender.com/api/auth/login",
+        `${process.env.REACT_APP_LOCAL_API}/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -72,7 +73,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -87,7 +87,6 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem("user", JSON.stringify(action.payload.user));
         localStorage.setItem("token", action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {

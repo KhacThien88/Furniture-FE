@@ -15,7 +15,7 @@ const Home = () => {
   const pageSize = 6;
 
   useEffect(() => {
-    fetch("https://furniture-be-od3w.onrender.com/api/products")
+    fetch(`${process.env.REACT_APP_LOCAL_API}/products`)
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);

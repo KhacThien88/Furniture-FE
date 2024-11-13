@@ -14,11 +14,7 @@ const ProductList = () => {
 
   useEffect(() => {
     const xhr = new XMLHttpRequest();
-    xhr.open(
-      "GET",
-      "https://furniture-be-od3w.onrender.com/api/products",
-      true
-    );
+    xhr.open("GET", `${process.env.REACT_APP_LOCAL_API}/products`, true);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
