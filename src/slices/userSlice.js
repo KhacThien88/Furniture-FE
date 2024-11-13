@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+// Thunk để đăng ký người dùng
 export const registerUser = createAsyncThunk(
   "user/registerUser",
   async (formData, { rejectWithValue }) => {
@@ -14,13 +15,14 @@ export const registerUser = createAsyncThunk(
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Registration failed");
-      return data; // Trả về dữ liệu nếu đăng ký thành công
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
+// Thunk để đăng nhập người dùng
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (formData, { rejectWithValue }) => {
@@ -35,25 +37,28 @@ export const loginUser = createAsyncThunk(
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Login failed");
-      return data; // Trả về thông tin người dùng và token khi đăng nhập thành công
+      return data;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
+const initialState = {
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  token: localStorage.getItem("token") || null,
+  loading: false,
+  error: null,
+};
+
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    user: null,
-    token: null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
+      localStorage.removeItem("user");
       localStorage.removeItem("token");
     },
   },
@@ -65,9 +70,10 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        //state.user = action.payload.user; // Lưu thông tin người dùng từ phản hồi
-        state.token = action.payload.token; // Lưu token
-        localStorage.setItem("token", action.payload.token); // Lưu token vào localStorage
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("token", action.payload.token);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -79,9 +85,10 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user; // Lưu thông tin người dùng
-        state.token = action.payload.token; // Lưu token
-        localStorage.setItem("token", action.payload.token); // Lưu token vào localStorage
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("token", action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
