@@ -32,7 +32,7 @@ const ProductList = () => {
     setCurrentPage(1); // Reset to page 1 after sorting
   };
 
-  const handleFilter = ({ name, priceRange }) => {
+  const handleFilter = ({ name, priceRange, category }) => {
     let filteredData = [...initialData];
     if (name) {
       filteredData = filteredData.filter((product) =>
@@ -55,6 +55,12 @@ const ProductList = () => {
       } else if (priceRange === "300+") {
         filteredData = filteredData.filter((product) => product.price > 300);
       }
+    }
+
+    if (category) {
+      filteredData = filteredData.filter((product) =>
+        product.category.toLowerCase().includes(category.toLowerCase())
+      );
     }
 
     setData(filteredData);
