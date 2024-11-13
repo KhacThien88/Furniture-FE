@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Pagination } from "antd";
-import ProductCard from "../../components/ProductCard";
-import SortDropdown from "./SortDropdown";
-import Loading from "../Loading";
-import FilterList from "./FilterList";
+import React, { useEffect, useState } from 'react';
+import { Pagination } from 'antd';
+import ProductCard from '../../components/ProductCard';
+import SortDropdown from './SortDropdown';
+import Loading from '../Loading';
+import FilterList from './FilterList';
 
-const ProductList = () => {
+const ProductList = ({ searchText }) => {
   const [data, setData] = useState([]);
   const [initialData, setInitialData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ const ProductList = () => {
 
   useEffect(() => {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `${process.env.REACT_APP_LOCAL_API}/products`, true);
+    xhr.open('GET', `${process.env.REACT_APP_LOCAL_API}/products`, true);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
@@ -23,7 +23,7 @@ const ProductList = () => {
         setLoading(false);
       }
     };
-    xhr.onerror = () => console.error("Failed to fetch data");
+    xhr.onerror = () => console.error('Failed to fetch data');
     xhr.send();
   }, []);
 
@@ -32,27 +32,22 @@ const ProductList = () => {
     setCurrentPage(1); // Reset to page 1 after sorting
   };
 
-  const handleFilter = ({ name, priceRange, category }) => {
+  const handleFilter = ({ priceRange, category }) => {
     let filteredData = [...initialData];
-    if (name) {
-      filteredData = filteredData.filter((product) =>
-        product.name.toLowerCase().includes(name.toLowerCase())
-      );
-    }
     if (priceRange) {
-      if (priceRange === "0-100") {
+      if (priceRange === '0-100') {
         filteredData = filteredData.filter(
           (product) => product.price >= 0 && product.price <= 100
         );
-      } else if (priceRange === "100-200") {
+      } else if (priceRange === '100-200') {
         filteredData = filteredData.filter(
           (product) => product.price > 100 && product.price <= 200
         );
-      } else if (priceRange === "200-300") {
+      } else if (priceRange === '200-300') {
         filteredData = filteredData.filter(
           (product) => product.price > 200 && product.price <= 300
         );
-      } else if (priceRange === "300+") {
+      } else if (priceRange === '300+') {
         filteredData = filteredData.filter((product) => product.price > 300);
       }
     }
@@ -71,34 +66,52 @@ const ProductList = () => {
     setCurrentPage(page);
   };
 
-  const currentData = data.slice(
+  // Filter products based on the search text, only when searchText is not empty
+  const filteredByNameData = searchText
+    ? data.filter((product) =>
+        product.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : data; // If no searchText, show all products
+
+  const currentData = filteredByNameData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   return (
     <>
-      <div className="flex justify-between py-3">
+      <div className='flex justify-between py-3'>
         <FilterList onFilter={handleFilter} />
-        <SortDropdown initialData={initialData} sortedData={handleSortChange} />
+        <SortDropdown
+          initialData={initialData}
+          sortedData={handleSortChange}
+        />
       </div>
+
       {loading ? (
         <Loading />
+      ) : filteredByNameData.length === 0 ? (
+        // Nếu không có sản phẩm sau khi lọc và tìm kiếm
+        <div className='text-center py-10'>
+          <h2 className='text-lime-500'>No products found!</h2>
+        </div>
       ) : (
         <>
-          <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
+          <div className='w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3'>
             {currentData.map((product) => (
               <div key={product._id}>
                 <ProductCard product={product} />
               </div>
             ))}
           </div>
+
+          {/* Hiển thị phân trang chỉ khi có sản phẩm */}
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={data.length}
+            total={filteredByNameData.length}
             onChange={handlePageChange}
-            className="py-5"
+            className='py-5'
           />
         </>
       )}
