@@ -1,8 +1,7 @@
-// ProductList.js
 import React, { useEffect, useState } from "react";
+import { Pagination } from "antd";
 import ProductCard from "../../components/ProductCard";
 import SortDropdown from "./SortDropdown";
-
 import Loading from "../Loading";
 import FilterList from "./FilterList";
 
@@ -10,6 +9,8 @@ const ProductList = () => {
   const [data, setData] = useState([]);
   const [initialData, setInitialData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
 
   useEffect(() => {
     const xhr = new XMLHttpRequest();
@@ -32,6 +33,7 @@ const ProductList = () => {
 
   const handleSortChange = (sortedData) => {
     setData(sortedData);
+    setCurrentPage(1); // Reset to page 1 after sorting
   };
 
   const handleFilter = ({ name, priceRange }) => {
@@ -60,7 +62,17 @@ const ProductList = () => {
     }
 
     setData(filteredData);
+    setCurrentPage(1); // Reset to page 1 after filtering
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const currentData = data.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <>
@@ -71,13 +83,22 @@ const ProductList = () => {
       {loading ? (
         <Loading />
       ) : (
-        <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
-          {data.map((product) => (
-            <div key={product._id}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
+            {currentData.map((product) => (
+              <div key={product._id}>
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={data.length}
+            onChange={handlePageChange}
+            className="py-5"
+          />
+        </>
       )}
     </>
   );
