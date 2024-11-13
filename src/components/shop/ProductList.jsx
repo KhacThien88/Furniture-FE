@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Pagination } from "antd";
-import ProductCard from "../../components/ProductCard";
-import SortDropdown from "./SortDropdown";
-import Loading from "../Loading";
-import FilterList from "./FilterList";
+import React, { useEffect, useState } from 'react';
+import { Pagination } from 'antd';
+import ProductCard from '../../components/ProductCard';
+import SortDropdown from './SortDropdown';
+import Loading from '../Loading';
+import FilterList from './FilterList';
 
 const ProductList = () => {
   const [data, setData] = useState([]);
@@ -15,8 +15,8 @@ const ProductList = () => {
   useEffect(() => {
     const xhr = new XMLHttpRequest();
     xhr.open(
-      "GET",
-      "https://furniture-be-od3w.onrender.com/api/products",
+      'GET',
+      'https://furniture-be-od3w.onrender.com/api/products',
       true
     );
     xhr.onreadystatechange = function () {
@@ -27,7 +27,7 @@ const ProductList = () => {
         setLoading(false);
       }
     };
-    xhr.onerror = () => console.error("Failed to fetch data");
+    xhr.onerror = () => console.error('Failed to fetch data');
     xhr.send();
   }, []);
 
@@ -36,7 +36,7 @@ const ProductList = () => {
     setCurrentPage(1); // Reset to page 1 after sorting
   };
 
-  const handleFilter = ({ name, priceRange }) => {
+  const handleFilter = ({ name, priceRange, category }) => {
     let filteredData = [...initialData];
     if (name) {
       filteredData = filteredData.filter((product) =>
@@ -44,21 +44,27 @@ const ProductList = () => {
       );
     }
     if (priceRange) {
-      if (priceRange === "0-100") {
+      if (priceRange === '0-100') {
         filteredData = filteredData.filter(
           (product) => product.price >= 0 && product.price <= 100
         );
-      } else if (priceRange === "100-200") {
+      } else if (priceRange === '100-200') {
         filteredData = filteredData.filter(
           (product) => product.price > 100 && product.price <= 200
         );
-      } else if (priceRange === "200-300") {
+      } else if (priceRange === '200-300') {
         filteredData = filteredData.filter(
           (product) => product.price > 200 && product.price <= 300
         );
-      } else if (priceRange === "300+") {
+      } else if (priceRange === '300+') {
         filteredData = filteredData.filter((product) => product.price > 300);
       }
+    }
+
+    if (category) {
+      filteredData = filteredData.filter((product) =>
+        product.category.toLowerCase().includes(category.toLowerCase())
+      );
     }
 
     setData(filteredData);
@@ -76,15 +82,18 @@ const ProductList = () => {
 
   return (
     <>
-      <div className="flex justify-between py-3">
+      <div className='flex justify-between py-3'>
         <FilterList onFilter={handleFilter} />
-        <SortDropdown initialData={initialData} sortedData={handleSortChange} />
+        <SortDropdown
+          initialData={initialData}
+          sortedData={handleSortChange}
+        />
       </div>
       {loading ? (
         <Loading />
       ) : (
         <>
-          <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
+          <div className='w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3'>
             {currentData.map((product) => (
               <div key={product._id}>
                 <ProductCard product={product} />
@@ -96,7 +105,7 @@ const ProductList = () => {
             pageSize={pageSize}
             total={data.length}
             onChange={handlePageChange}
-            className="py-5"
+            className='py-5'
           />
         </>
       )}
