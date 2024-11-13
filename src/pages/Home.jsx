@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Pagination } from "antd";
 import HeroSlider from "../components/home/HeroSlider";
 import Categories from "../components/home/Categories";
 import OfferBanners from "../components/home/OfferBanners";
@@ -9,7 +10,9 @@ import ProductCard from "../components/ProductCard";
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const pageSize = 6;
 
   useEffect(() => {
     fetch("https://furniture-be-od3w.onrender.com/api/products")
@@ -27,7 +30,17 @@ const Home = () => {
       product.name.toLowerCase().includes(categoryName.toLowerCase())
     );
     setFilteredProducts(filtered);
+    setCurrentPage(1);
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const currentData = filteredProducts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
@@ -51,10 +64,17 @@ const Home = () => {
           </h1>
         </div>
         <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
-          {filteredProducts.map((product) => (
+          {currentData.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={filteredProducts.length}
+          onChange={handlePageChange}
+          className="py-5"
+        />
       </div>
       <div className="w-11/12 py-5">
         <OfferBanners />

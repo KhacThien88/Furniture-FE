@@ -6,6 +6,7 @@ import { addCart } from "../slices/cartSlice";
 import Newsletter from "../components/Newsletter";
 import Loading from "../components/Loading";
 import ProductCard from "../components/ProductCard";
+import { Pagination } from "antd";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -19,7 +20,8 @@ const ProductDetails = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
   useEffect(() => {
     // Lấy tất cả sản phẩm (giống trang Home)
     fetch("https://furniture-be-od3w.onrender.com/api/products")
@@ -62,7 +64,14 @@ const ProductDetails = () => {
 
   const increment = () => setQuantity(quantity + 1);
   const decrement = () => quantity > 1 && setQuantity(quantity - 1);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   const handleImageClick = (image) => setSelectedImage(image);
+  const currentReviews = reviews.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   return (
     <>
@@ -138,8 +147,8 @@ const ProductDetails = () => {
             {/* Section for Reviews */}
             <div className="mt-8">
               <h3 className="text-2xl font-bold mb-4">Customer Reviews</h3>
-              {reviews.length > 0 ? (
-                reviews.map((review, index) => (
+              {currentReviews.length > 0 ? (
+                currentReviews.map((review, index) => (
                   <div key={index} className="mb-4 border-b pb-4">
                     <p className="font-semibold">{review.author}</p>
                     <p className="text-yellow-500">
@@ -153,6 +162,13 @@ const ProductDetails = () => {
               ) : (
                 <p>No reviews available for this product.</p>
               )}
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={reviews.length}
+                onChange={handlePageChange}
+                className="py-5"
+              />
             </div>
 
             {/* Section for Related Products */}
