@@ -7,7 +7,7 @@ const BestSeller = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_LOCAL_API}/products`)
+    fetch(`${process.env.REACT_APP_PRODUCTION_API}/products`)
       .then((res) => {
         //console.log('Response status:', res.status); // Kiểm tra status code
         return res.json();
