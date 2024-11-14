@@ -7,7 +7,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_PRODUCTION_API}/auth/register`,
+        `${process.env.REACT_APP_LOCAL_API}/auth/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -29,7 +29,7 @@ export const loginUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_PRODUCTION_API}/auth/login`,
+        `${process.env.REACT_APP_LOCAL_API}/auth/login`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
