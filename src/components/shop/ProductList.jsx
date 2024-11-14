@@ -5,7 +5,7 @@ import SortDropdown from "./SortDropdown";
 import Loading from "../Loading";
 import FilterList from "./FilterList";
 
-const ProductList = () => {
+const ProductList = ({ searchText }) => {
   const [data, setData] = useState([]);
   const [initialData, setInitialData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,13 +32,8 @@ const ProductList = () => {
     setCurrentPage(1); // Reset to page 1 after sorting
   };
 
-  const handleFilter = ({ name, priceRange, category }) => {
+  const handleFilter = ({ priceRange, category }) => {
     let filteredData = [...initialData];
-    if (name) {
-      filteredData = filteredData.filter((product) =>
-        product.name.toLowerCase().includes(name.toLowerCase())
-      );
-    }
     if (priceRange) {
       if (priceRange === "0-100") {
         filteredData = filteredData.filter(
@@ -71,7 +66,14 @@ const ProductList = () => {
     setCurrentPage(page);
   };
 
-  const currentData = data.slice(
+  // Filter products based on the search text, only when searchText is not empty
+  const filteredByNameData = searchText
+    ? data.filter((product) =>
+        product.name.toLowerCase().includes(searchText.toLowerCase())
+      )
+    : data; // If no searchText, show all products
+
+  const currentData = filteredByNameData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -82,8 +84,14 @@ const ProductList = () => {
         <FilterList onFilter={handleFilter} />
         <SortDropdown initialData={initialData} sortedData={handleSortChange} />
       </div>
+
       {loading ? (
         <Loading />
+      ) : filteredByNameData.length === 0 ? (
+        // Nếu không có sản phẩm sau khi lọc và tìm kiếm
+        <div className="text-center py-10">
+          <h2 className="text-lime-500">No products found!</h2>
+        </div>
       ) : (
         <>
           <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
@@ -93,10 +101,12 @@ const ProductList = () => {
               </div>
             ))}
           </div>
+
+          {/* Hiển thị phân trang chỉ khi có sản phẩm */}
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={data.length}
+            total={filteredByNameData.length}
             onChange={handlePageChange}
             className="py-5"
           />

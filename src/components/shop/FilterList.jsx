@@ -2,23 +2,15 @@
 import React, { useState } from 'react';
 
 const FilterList = ({ onFilter }) => {
-  const [name, setName] = useState('');
   const [priceRange, setPriceRange] = useState('');
   const [category, setCategory] = useState('');
 
   const handleFilterChange = () => {
-    onFilter({ name, priceRange, category });
+    onFilter({ priceRange, category });
   };
 
   return (
     <div className='flex gap-4 py-3'>
-      <input
-        type='text'
-        placeholder='Search by name'
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className='p-2 border focus:outline-none'
-      />
       {/* Filter by price */}
       <select
         value={priceRange}
