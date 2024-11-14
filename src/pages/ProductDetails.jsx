@@ -24,7 +24,7 @@ const ProductDetails = () => {
   const pageSize = 6;
   useEffect(() => {
     // Lấy tất cả sản phẩm (giống trang Home)
-    fetch(`${process.env.REACT_APP_LOCAL_API}/products`)
+    fetch(`${process.env.REACT_APP_PRODUCTION_API}/products`)
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);
@@ -32,7 +32,7 @@ const ProductDetails = () => {
       .catch((error) => console.error("Error fetching all products:", error));
 
     // Lấy dữ liệu sản phẩm hiện tại
-    fetch(`${process.env.REACT_APP_LOCAL_API}/products/${id}`)
+    fetch(`${process.env.REACT_APP_PRODUCTION_API}/products/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProduct(data);
@@ -42,7 +42,7 @@ const ProductDetails = () => {
       .catch((error) => console.error("Error fetching product:", error));
 
     // Lấy danh sách đánh giá cho sản phẩm
-    fetch(`${process.env.REACT_APP_LOCAL_API}/reviews?productId=${id}`)
+    fetch(`${process.env.REACT_APP_PRODUCTION_API}/reviews?productId=${id}`)
       .then((res) => res.json())
       .then((data) => setReviews(data))
       .catch((error) => console.error("Error fetching reviews:", error));

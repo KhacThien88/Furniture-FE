@@ -15,7 +15,7 @@ const Home = () => {
   const pageSize = 6;
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_LOCAL_API}/products`)
+    fetch(`${process.env.REACT_APP_PRODUCTION_API}/products`)
       .then((res) => res.json())
       .then((data) => {
         setAllProducts(data);
