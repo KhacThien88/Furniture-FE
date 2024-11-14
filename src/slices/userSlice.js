@@ -1,21 +1,20 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { GetUserId } from "../utils/UserUtil";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Thunk để đăng ký người dùng
 export const registerUser = createAsyncThunk(
-  "user/registerUser",
+  'user/registerUser',
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_LOCAL_API}/auth/register`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         }
       );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Registration failed");
+      if (!response.ok) throw new Error(data.message || 'Registration failed');
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -25,19 +24,19 @@ export const registerUser = createAsyncThunk(
 
 // Thunk để đăng nhập người dùng
 export const loginUser = createAsyncThunk(
-  "user/loginUser",
+  'user/loginUser',
   async (formData, { rejectWithValue }) => {
     try {
       const response = await fetch(
         `${process.env.REACT_APP_LOCAL_API}/auth/login`,
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
         }
       );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Login failed");
+      if (!response.ok) throw new Error(data.message || 'Login failed');
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -46,21 +45,21 @@ export const loginUser = createAsyncThunk(
 );
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
-  token: localStorage.getItem("token") || null,
+  user: JSON.parse(localStorage.getItem('user')) || null,
+  token: localStorage.getItem('token') || null,
   loading: false,
   error: null,
 };
 
 const userSlice = createSlice({
-  name: "user",
+  name: 'user',
   initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     },
   },
   extraReducers: (builder) => {
@@ -73,7 +72,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -87,7 +86,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem('token', action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
