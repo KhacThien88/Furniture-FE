@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Pagination } from "antd";
-import ProductCard from "../../components/ProductCard";
-import SortDropdown from "./SortDropdown";
-import Loading from "../Loading";
-import FilterList from "./FilterList";
+import React, { useEffect, useState } from 'react';
+import { Pagination } from 'antd';
+import ProductCard from '../../components/ProductCard';
+import SortDropdown from './SortDropdown';
+import Loading from '../Loading';
+import FilterList from './FilterList';
 
 const ProductList = ({ searchText }) => {
   const [data, setData] = useState([]);
@@ -14,7 +14,7 @@ const ProductList = ({ searchText }) => {
 
   useEffect(() => {
     const xhr = new XMLHttpRequest();
-    xhr.open("GET", `${process.env.REACT_APP_PRODUCTION_API}/products`, true);
+    xhr.open('GET', `${process.env.REACT_APP_PRODUCTION_API}/products`, true);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
@@ -23,7 +23,7 @@ const ProductList = ({ searchText }) => {
         setLoading(false);
       }
     };
-    xhr.onerror = () => console.error("Failed to fetch data");
+    xhr.onerror = () => console.error('Failed to fetch data');
     xhr.send();
   }, []);
 
@@ -32,22 +32,22 @@ const ProductList = ({ searchText }) => {
     setCurrentPage(1); // Reset to page 1 after sorting
   };
 
-  const handleFilter = ({ priceRange, category }) => {
+  const handleFilter = ({ priceRange, category, manufacturer, material }) => {
     let filteredData = [...initialData];
     if (priceRange) {
-      if (priceRange === "0-100") {
+      if (priceRange === '0-100') {
         filteredData = filteredData.filter(
           (product) => product.price >= 0 && product.price <= 100
         );
-      } else if (priceRange === "100-200") {
+      } else if (priceRange === '100-200') {
         filteredData = filteredData.filter(
           (product) => product.price > 100 && product.price <= 200
         );
-      } else if (priceRange === "200-300") {
+      } else if (priceRange === '200-300') {
         filteredData = filteredData.filter(
           (product) => product.price > 200 && product.price <= 300
         );
-      } else if (priceRange === "300+") {
+      } else if (priceRange === '300+') {
         filteredData = filteredData.filter((product) => product.price > 300);
       }
     }
@@ -58,8 +58,23 @@ const ProductList = ({ searchText }) => {
       );
     }
 
+    if (manufacturer) {
+      filteredData = filteredData.filter((product) =>
+        product.manufacturer.toLowerCase().includes(manufacturer.toLowerCase())
+      );
+    }
+
+    if (material) {
+      filteredData = filteredData.filter((product) =>
+        product.material.toLowerCase().includes(material.toLowerCase())
+      );
+    }
     setData(filteredData);
     setCurrentPage(1); // Reset to page 1 after filtering
+  };
+
+  const clearFilter = () => {
+    setData(initialData);
   };
 
   const handlePageChange = (page) => {
@@ -80,21 +95,27 @@ const ProductList = ({ searchText }) => {
 
   return (
     <>
-      <div className="flex justify-between py-3">
-        <FilterList onFilter={handleFilter} />
-        <SortDropdown initialData={initialData} sortedData={handleSortChange} />
+      <div className='flex justify-between py-3'>
+        <FilterList
+          onFilter={handleFilter}
+          clearFilter={clearFilter}
+        />
+        <SortDropdown
+          initialData={initialData}
+          sortedData={handleSortChange}
+        />
       </div>
 
       {loading ? (
         <Loading />
       ) : filteredByNameData.length === 0 ? (
         // Nếu không có sản phẩm sau khi lọc và tìm kiếm
-        <div className="text-center py-10">
-          <h2 className="text-lime-500">No products found!</h2>
+        <div className='text-center py-10'>
+          <h2 className='text-lime-500'>No products found!</h2>
         </div>
       ) : (
         <>
-          <div className="w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3">
+          <div className='w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3'>
             {currentData.map((product) => (
               <div key={product._id}>
                 <ProductCard product={product} />
@@ -108,7 +129,7 @@ const ProductList = ({ searchText }) => {
             pageSize={pageSize}
             total={filteredByNameData.length}
             onChange={handlePageChange}
-            className="py-5"
+            className='py-5'
           />
         </>
       )}

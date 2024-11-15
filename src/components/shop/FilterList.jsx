@@ -1,12 +1,22 @@
 // Filter.js
 import React, { useState } from 'react';
 
-const FilterList = ({ onFilter }) => {
+const FilterList = ({ onFilter, clearFilter }) => {
   const [priceRange, setPriceRange] = useState('');
   const [category, setCategory] = useState('');
+  const [manufacturer, setManufacturer] = useState('');
+  const [material, setMaterial] = useState('');
 
   const handleFilterChange = () => {
-    onFilter({ priceRange, category });
+    onFilter({ priceRange, category, manufacturer, material });
+  };
+
+  const handleClearFilter = () => {
+    setPriceRange('');
+    setCategory('');
+    setManufacturer('');
+    setMaterial('');
+    clearFilter();
   };
 
   return (
@@ -40,11 +50,48 @@ const FilterList = ({ onFilter }) => {
         <option value='Sofas'>Sofas</option>
         <option value='Shelves'>Shelves</option>
       </select>
+
+      {/* Filter by manufacturer */}
+      <select
+        value={manufacturer}
+        onChange={(e) => setManufacturer(e.target.value)}
+        className='p-2 border focus:outline-none'
+      >
+        <option value=''>Select Manufacturer</option>
+        <option value='Vitra'>Vitra</option>
+        <option value='IKEA'>IKEA</option>
+        <option value='Herman Miller'>Herman Miller</option>
+        <option value='Hawworth'>Hawworth</option>
+        <option value='Maiden Home'>Maiden Home</option>
+        <option value='Knoll'>Knoll</option>
+      </select>
+
+      {/* Filter by material */}
+      <select
+        value={material}
+        onChange={(e) => setMaterial(e.target.value)}
+        className='p-2 border focus:outline-none'
+      >
+        <option value=''>Select Material</option>
+        <option value='Wood'>Wood</option>
+        <option value='Fabric'>Fabric</option>
+        <option value='Glass'>Glass</option>
+        <option value='Metal'>Metal</option>
+        <option value='Plastic'>Plastic</option>
+        <option value='Ceramic '>Ceramic </option>
+      </select>
       <button
         onClick={handleFilterChange}
         className='p-2 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded'
       >
         Apply Filters
+      </button>
+
+      <button
+        onClick={handleClearFilter}
+        className='p-2 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded'
+      >
+        Clear Filters
       </button>
     </div>
   );

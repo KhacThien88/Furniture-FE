@@ -12,14 +12,12 @@ const Shop = () => {
   useEffect(() => {
     // kiểm tra trạng thái searchbar từ url
     if (location.state?.showSearchBar) {
-      console.log('showSearchBar:', location.state.showSearchBar);
       setShowSearchBar(true);
     }
   }, [location.state]);
   const handleCloseSearchBar = () => {
     setSearchText('');
     setShowSearchBar(false);
-    console.log('showSearchBar: ', showSearchBar);
   };
 
   return (
