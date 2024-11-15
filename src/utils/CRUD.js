@@ -14,3 +14,20 @@ export const resetPassword = (resetPassword) => {
     },
   });
 };
+export const ChangePassword = (changePasswordData) => {
+  return axiosUtils.post("/Account/VerifyPassword", changePasswordData, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const ChangeProfileAPI = (userId, updatedProfile) => {
+  return axiosUtils.post(`/user/update-profile?id=${userId}`, updatedProfile, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+export const GetProfileAPI = (userId) => {
+  return axiosUtils.get(`/user/Profile?userId=${userId}`);
+};
