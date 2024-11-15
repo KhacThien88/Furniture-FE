@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser, loginUser } from "../slices/userSlice";
@@ -19,7 +20,10 @@ const AuthForm = ({ mode }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.user);
-
+  const goToForgotPassword = (e) => {
+    e.preventDefault();
+    navigate("/forgot-password");
+  };
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -195,6 +199,14 @@ const AuthForm = ({ mode }) => {
             className="w-full p-2 border rounded"
             required
           />
+          {mode === "login" && (
+            <a
+              onClick={goToForgotPassword}
+              className="cursor-pointer text-sm text-yellow-500 hover:text-yellow-700"
+            >
+              Forgot Password?
+            </a>
+          )}
         </div>
         {mode === "signup" && (
           <div className="mb-4">
