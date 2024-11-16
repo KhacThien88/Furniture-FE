@@ -1,97 +1,53 @@
-// Filter.js
-import React, { useState } from 'react';
+import React from 'react';
 
-const FilterList = ({ onFilter, clearFilter }) => {
-  const [priceRange, setPriceRange] = useState('');
-  const [category, setCategory] = useState('');
-  const [manufacturer, setManufacturer] = useState('');
-  const [material, setMaterial] = useState('');
-
-  const handleFilterChange = () => {
-    onFilter({ priceRange, category, manufacturer, material });
-  };
-
-  const handleClearFilter = () => {
-    setPriceRange('');
-    setCategory('');
-    setManufacturer('');
-    setMaterial('');
-    clearFilter();
-  };
-
+const FilterList = ({
+  options,
+  onFilterChange,
+  onClearFilters,
+  selectedFilters,
+}) => {
   return (
-    <div className='flex gap-4 py-3'>
-      {/* Filter by price */}
-      <select
-        value={priceRange}
-        onChange={(e) => setPriceRange(e.target.value)}
-        className='p-2 border focus:outline-none'
-      >
-        <option value=''>Select Price Range</option>
-        <option value='0-100'>$0 - $100</option>
-        <option value='100-200'>$100 - $200</option>
-        <option value='200-300'>$200 - $300</option>
-        <option value='300+'>$300+</option>
-      </select>
+    <div className='p-4 border rounded-md shadow-md w-full max-w-md'>
+      <h2 className='text-lg font-bold mb-4'>Filter Options</h2>
 
-      {/* Filter by category */}
-      <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className='p-2 border focus:outline-none'
-      >
-        <option value=''>Select Category</option>
-        <option value='Lamps'>Lamps</option>
-        <option value='Tables'>Tables</option>
-        <option value='Chairs'>Chairs</option>
-        <option value='Dressers'>Dressers</option>
-        <option value='Cots'>Cots</option>
-        <option value='Night Stands'>Night Stands</option>
-        <option value='Sofas'>Sofas</option>
-        <option value='Shelves'>Shelves</option>
-      </select>
+      {/* Hiển thị danh sách bộ lọc */}
+      {Object.keys(options).map((filterKey) => (
+        <div
+          key={filterKey}
+          className='mb-4'
+        >
+          <h3 className='font-semibold text-gray-700 capitalize'>
+            {filterKey}
+          </h3>
+          <div className='flex flex-col space-y-2'>
+            {options[filterKey].map((option) => (
+              <label
+                key={option}
+                className='inline-flex items-center'
+              >
+                <input
+                  type='checkbox'
+                  className='form-checkbox h-5 w-5 text-blue-600'
+                  checked={
+                    selectedFilters[filterKey]?.includes(option) || false
+                  }
+                  onChange={(e) =>
+                    onFilterChange(filterKey, option, e.target.checked)
+                  }
+                />
+                <span className='ml-2 text-gray-800'>{option}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
 
-      {/* Filter by manufacturer */}
-      <select
-        value={manufacturer}
-        onChange={(e) => setManufacturer(e.target.value)}
-        className='p-2 border focus:outline-none'
-      >
-        <option value=''>Select Manufacturer</option>
-        <option value='Vitra'>Vitra</option>
-        <option value='IKEA'>IKEA</option>
-        <option value='Herman Miller'>Herman Miller</option>
-        <option value='Hawworth'>Hawworth</option>
-        <option value='Maiden Home'>Maiden Home</option>
-        <option value='Knoll'>Knoll</option>
-      </select>
-
-      {/* Filter by material */}
-      <select
-        value={material}
-        onChange={(e) => setMaterial(e.target.value)}
-        className='p-2 border focus:outline-none'
-      >
-        <option value=''>Select Material</option>
-        <option value='Wood'>Wood</option>
-        <option value='Fabric'>Fabric</option>
-        <option value='Glass'>Glass</option>
-        <option value='Metal'>Metal</option>
-        <option value='Plastic'>Plastic</option>
-        <option value='Ceramic '>Ceramic </option>
-      </select>
+      {/* Nút xóa tất cả bộ lọc */}
       <button
-        onClick={handleFilterChange}
-        className='p-2 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded'
+        onClick={onClearFilters}
+        className='mt-4 bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600'
       >
-        Apply Filters
-      </button>
-
-      <button
-        onClick={handleClearFilter}
-        className='p-2 bg-lime-500 hover:bg-lime-600 text-white font-bold rounded'
-      >
-        Clear Filters
+        Clear All Filters
       </button>
     </div>
   );

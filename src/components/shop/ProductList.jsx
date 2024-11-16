@@ -6,11 +6,60 @@ import Loading from '../Loading';
 import FilterList from './FilterList';
 
 const ProductList = ({ searchText }) => {
-  const [data, setData] = useState([]);
-  const [initialData, setInitialData] = useState([]);
+  const [data, setData] = useState([]); // Original data
+  const [filteredData, setFilteredData] = useState([]); // Filtered data
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 6;
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [pageSize, setPageSize] = useState(9); // Items per page
+
+  const options = {
+    price: ['$0-$100', '$100-$200', '$200-$300', 'over $300'],
+    category: [
+      'Lamps',
+      'Tables',
+      'Chairs',
+      'Dressers',
+      'Cots',
+      'Night Stands',
+      'Sofas',
+      'Shelves',
+    ],
+    manufacturer: [
+      'Vitra',
+      'IKEA',
+      'Herman Miller',
+      'Hawworth',
+      'Maiden Home',
+      'Knoll',
+    ],
+    material: ['Wood', 'Plastic', 'Metal', 'Fabric', 'Glass', 'Ceramic'],
+  };
+
+  const handleFilterChange = (filterKey, value, isChecked) => {
+    setSelectedFilters((prevFilters) => {
+      const updatedFilters = { ...prevFilters };
+      if (isChecked) {
+        if (!updatedFilters[filterKey]) {
+          updatedFilters[filterKey] = [];
+        }
+        updatedFilters[filterKey].push(value);
+      } else {
+        updatedFilters[filterKey] = updatedFilters[filterKey].filter(
+          (item) => item !== value
+        );
+        if (updatedFilters[filterKey].length === 0) {
+          delete updatedFilters[filterKey];
+        }
+      }
+      return updatedFilters;
+    });
+  };
+
+  const clearFilters = () => {
+    setSelectedFilters({});
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
     const xhr = new XMLHttpRequest();
@@ -19,7 +68,7 @@ const ProductList = ({ searchText }) => {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const response = JSON.parse(xhr.responseText);
         setData(response);
-        setInitialData(response);
+        setFilteredData(response);
         setLoading(false);
       }
     };
@@ -27,112 +76,103 @@ const ProductList = ({ searchText }) => {
     xhr.send();
   }, []);
 
-  const handleSortChange = (sortedData) => {
-    setData(sortedData);
-    setCurrentPage(1); // Reset to page 1 after sorting
-  };
-
-  const handleFilter = ({ priceRange, category, manufacturer, material }) => {
-    let filteredData = [...initialData];
-    if (priceRange) {
-      if (priceRange === '0-100') {
-        filteredData = filteredData.filter(
-          (product) => product.price >= 0 && product.price <= 100
-        );
-      } else if (priceRange === '100-200') {
-        filteredData = filteredData.filter(
-          (product) => product.price > 100 && product.price <= 200
-        );
-      } else if (priceRange === '200-300') {
-        filteredData = filteredData.filter(
-          (product) => product.price > 200 && product.price <= 300
-        );
-      } else if (priceRange === '300+') {
-        filteredData = filteredData.filter((product) => product.price > 300);
+  useEffect(() => {
+    let updatedData = [...data];
+    // Filter based on selectedFilters
+    Object.keys(selectedFilters).forEach((filterKey) => {
+      const filterValues = selectedFilters[filterKey];
+      if (filterValues.length > 0) {
+        updatedData = updatedData.filter((product) => {
+          if (filterKey === 'price') {
+            // Filter by price
+            return filterValues.some((priceRange) => {
+              if (priceRange === '$0-$100')
+                return product.price >= 0 && product.price <= 100;
+              if (priceRange === '$100-$200')
+                return product.price >= 100 && product.price <= 200;
+              if (priceRange === '$200-$300')
+                return product.price >= 200 && product.price <= 300;
+              if (priceRange === 'over $300') return product.price > 300;
+              return false;
+            });
+          } else {
+            // Filter by other attributes (category, manufacturer, material)
+            return filterValues.includes(product[filterKey]);
+          }
+        });
       }
-    }
+    });
 
-    if (category) {
-      filteredData = filteredData.filter((product) =>
-        product.category.toLowerCase().includes(category.toLowerCase())
-      );
-    }
-
-    if (manufacturer) {
-      filteredData = filteredData.filter((product) =>
-        product.manufacturer.toLowerCase().includes(manufacturer.toLowerCase())
-      );
-    }
-
-    if (material) {
-      filteredData = filteredData.filter((product) =>
-        product.material.toLowerCase().includes(material.toLowerCase())
-      );
-    }
-    setData(filteredData);
-    setCurrentPage(1); // Reset to page 1 after filtering
-  };
-
-  const clearFilter = () => {
-    setData(initialData);
-  };
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Filter products based on the search text, only when searchText is not empty
-  const filteredByNameData = searchText
-    ? data.filter((product) =>
+    // Filter by searchText
+    if (searchText) {
+      updatedData = updatedData.filter((product) =>
         product.name.toLowerCase().includes(searchText.toLowerCase())
-      )
-    : data; // If no searchText, show all products
+      );
+    }
 
-  const currentData = filteredByNameData.slice(
+    setFilteredData(updatedData); // update filtered data  based on all attributes
+  }, [selectedFilters, searchText, data]);
+
+  const handleSortChange = (sortedData) => {
+    setFilteredData(sortedData); // Update filtered data after sorting
+  };
+
+  // Get paginated data
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   return (
     <>
-      <div className='flex justify-between py-3'>
-        <FilterList
-          onFilter={handleFilter}
-          clearFilter={clearFilter}
-        />
-        <SortDropdown
-          initialData={initialData}
-          sortedData={handleSortChange}
-        />
-      </div>
-
-      {loading ? (
-        <Loading />
-      ) : filteredByNameData.length === 0 ? (
-        // Nếu không có sản phẩm sau khi lọc và tìm kiếm
-        <div className='text-center py-10'>
-          <h2 className='text-lime-500'>No products found!</h2>
-        </div>
-      ) : (
-        <>
-          <div className='w-full grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3'>
-            {currentData.map((product) => (
-              <div key={product._id}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
-
-          {/* Hiển thị phân trang chỉ khi có sản phẩm */}
-          <Pagination
-            current={currentPage}
-            pageSize={pageSize}
-            total={filteredByNameData.length}
-            onChange={handlePageChange}
-            className='py-5'
+      <SortDropdown
+        initialData={filteredData}
+        sortedData={handleSortChange}
+      />
+      <div className='flex gap-6 w-full'>
+        <div className='py-3 w-1/6'>
+          <FilterList
+            options={options}
+            onFilterChange={handleFilterChange}
+            onClearFilters={clearFilters}
+            selectedFilters={selectedFilters}
           />
-        </>
-      )}
+        </div>
+        {loading ? (
+          <div className='flex items-center justify-center w-full h-full'>
+            <Loading />
+          </div>
+        ) : (
+          <div className='w-5/6'>
+            <div className='grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 py-3 gap-3'>
+              {paginatedData.length > 0 ? (
+                paginatedData.map((product) => (
+                  <div key={product._id}>
+                    <ProductCard product={product} />
+                  </div>
+                ))
+              ) : (
+                <div>
+                  <h1 className='text-lime-500 font-bold'>
+                    No products found!
+                  </h1>
+                </div>
+              )}
+            </div>
+            <div className='flex justify-center mt-4'>
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={filteredData.length}
+                onChange={(page, pageSize) => {
+                  setCurrentPage(page);
+                  setPageSize(pageSize);
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
